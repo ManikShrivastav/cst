@@ -1,0 +1,308 @@
+Program 1A — Stability using closed-loop poles
+clc;
+clear;
+close all;
+K = 10;
+G = tf(K,[1 6 8 0]);
+T = feedback(G,1);
+poles = pole(T)
+if all(real(poles)<0)
+disp('System is Stable');
+elseif any(real(poles)>0)
+disp('System is Unstable');
+else
+disp('System is Marginally Stable');
+end
+Program 1B — Pole-zero map and stability
+clc;
+clear;
+close all;
+num = [10];
+den = [1 7 10 0];
+G = tf(num,den);
+poles = pole(G);
+disp('Poles of the system:');
+Poles of the system:
+disp(poles);
+figure;
+pzmap(G);
+grid on;
+title('Pole Zero Map');
+if all(real(poles)<0)
+disp('SYSTEM IS STABLE');
+elseif any(real(poles)>0)
+disp('SYSTEM IS UNSTABLE');
+else
+disp('SYSTEM IS MARGINALLY STABLE');
+end
+Program 2A — Basic root locus plot
+clc;
+clear;
+close all;
+num = 1;
+den = [1 6 8 0];
+G = tf(num,den);
+figure;
+rlocus(G);
+grid on;
+title('Root Locus Plot');
+Program 2B — Root locus with damping ratio
+clc;
+clear;
+close all;
+num = 1;
+den = [1 6 8 0];
+G = tf(num,den);
+figure;
+rlocus(G);
+sgrid;
+grid on;
+title('Root Locus with Damping Ratio');
+Program 2C — Root locus with gain and closed-loop response with dynamic point
+clc;
+clear;
+close all;
+num = 1;
+den = [1 6 8 0];
+G = tf(num,den);
+figure;
+rlocus(G);
+grid on;
+[k,p] = rlocfind(G);
+T = feedback(k*G,1);
+disp('Closed Loop Poles:');
+Closed Loop Poles:
+poles = pole(T)
+disp('Dynamic Characteristics:');
+Dynamic Characteristics:
+stepinfo(T)
+disp('Damping Information:');
+Damping Information:
+damp(T)
+figure;
+step(T);
+grid on;
+title('Closed Loop Step Response');
+Program 2C — Root locus with gain and closed-loop response with dynamic point
+clc;
+clear;
+close all;
+num = 1;
+den = [1 6 8 0];
+G = tf(num,den);
+figure;
+rlocus(G);
+grid on;
+K = 10;
+T = feedback(K*G,1);
+disp('Closed Loop Poles:');
+Closed Loop Poles:
+poles = pole(T)
+disp('Dynamic Characteristics:');
+Dynamic Characteristics:
+stepinfo(T)
+disp('Damping Information:');
+Damping Information:
+damp(T)
+figure;
+step(T);
+grid on;
+title('Closed Loop Step Response');
+Program 3 — Bode plot with gain margin and phase margin
+clc;
+clear;
+close all;
+num = [1];
+den = [1 7 10 0];
+G = tf(num,den);
+figure;
+bode(G);
+grid on;
+title('Bode Plot');
+figure;
+margin(G);
+grid on;
+[Gm,Pm,Wcg,Wcp] = margin(G);
+GM_dB = 20*log10(Gm);
+disp('Gain Margin:');
+disp(GM_dB);
+disp('Phase Margin:');
+disp(Pm);
+disp('Wcg:');
+disp(Wcg);
+disp('Wcp:');
+disp(Wcp);
+BW = bandwidth(G);
+disp('Bandwidth:');
+disp(BW);
+if Pm > 0 && Gm > 1
+disp('System is Stable');
+elseif Pm == 0 || Gm == 1
+disp('System is Marginally Stable');
+else
+disp('System is Unstable');
+end
+Basic Bode Plot
+clc;
+clear;
+close all;
+num = [1];
+den = [1 7 10 0];
+G = tf(num,den);
+figure;
+bode(G);
+grid on;
+title('Bode Plot');
+4. State-space representation, controllability and observability
+Program 4 — State-space model
+clc;
+clear;
+close all;
+A = [0 1;-2 -3];
+B = [0;1];
+C = [1 0];
+12
+D = 0;
+sys = ss(A,B,C,D);
+% Controllability
+Co = ctrb(A,B);
+disp('Controllability Matrix:');
+disp(Co);
+if rank(Co) == size(A,1)
+disp('System is Controllable');
+else
+disp('System is Not Controllable');
+end
+System is Controllable
+% Observability
+Ob = obsv(A,C);
+disp('Observability Matrix:');
+disp(Ob);
+if rank(Ob) == size(A,1)
+disp('System is Observable');
+else
+disp('System is Not Observable');
+end
+5. Pole placement / state feedback controller
+Program 5 — Pole placement using place()
+clc;
+clear;
+close all;
+13
+A = [0 1;-2 -3];
+B = [0;1];
+C = [1 0];
+D = 0;
+sys = ss(A,B,C,D);
+% Controllability
+Co = ctrb(A,B);
+if rank(Co) == size(A,1)
+disp('System is Controllable');
+else
+disp('System is Not Controllable');
+end
+% Desired poles
+desired_poles = [-4 -5];
+% Pole placement
+K = place(A,B,desired_poles);
+disp('State Feedback Gain K = ');
+disp(K);
+% Closed loop system
+Acl = A - B*K;
+disp('Closed Loop Poles = ');
+Closed Loop Poles =
+disp(eig(Acl));
+6. State observer / observer design
+Program 6 — Observer gain using place()
+clc;
+clear;
+close all;
+A = [0 1;-2 -3];
+B = [0;1];
+C = [1 0];
+D = 0;
+sys = ss(A,B,C,D);
+% Observability
+Ob = obsv(A,C);
+disp('Observability Matrix:');
+Observability Matrix:
+disp(Ob);
+
+if rank(Ob) == size(A,1)
+disp('System is Observable');
+else
+disp('System is Not Observable');
+end
+% Desired observer poles
+observer_poles = [-10 -12];
+% Observer gain
+L = place(A',C',observer_poles)';
+disp('Observer Gain L = ');
+disp(L);
+% Observer matrix
+Aobs = A - L*C;
+disp('Observer Poles = ');
+
+disp(eig(Aobs));
+
+7. Optimal control — LQR
+Program 7A — Basic LQR
+clc;
+clear;
+close all;
+A = [0 1;-2 -3];
+B = [0;1];
+C = [1 0];
+D = 0;
+Q = eye(2);
+R = 1;
+[K,S,e] = lqr(A,B,Q,R);
+disp('Optimal LQR Gain K:');
+disp(K);
+disp('Solution of Riccati Equation S:');
+disp(S);
+
+disp('Closed Loop Poles:');
+disp(e);
+
+Acl = A - B*K;
+disp('Eigenvalues of Closed Loop System:');
+disp(eig(Acl));
+
+Program 7B — LQR with step response and initial condition
+clc;
+clear;
+close all;
+% System matrices
+A = [0 1;-1 -0.2];
+B = [0;1];
+C = [1 0];
+D = 0;
+% Weighting matrices
+Q = [10 0;0 1];
+R = 1;
+% LQR gain
+[K,S,e] = lqr(A,B,Q,R);
+disp('Optimal LQR Gain K:');
+disp(K);
+disp('Closed Loop Poles:');
+disp(e);
+
+% Closed loop system
+A_cl = A - B*K;
+sys_cl = ss(A_cl,B,C,D);
+% Step response
+step(sys_cl);
+grid on;
+% Initial condition
+x0 = [2;0];
+t = 0:0.01:10;
+[y,t_out,x] = initial(sys_cl,x0,t);
+% Plot results
+figure;
+plot(t_out,x,'LineWidth',1.5);
+grid on;
+title('LQR Controlled System Response from Initial State');
+xlabel('Time (seconds)');
+ylabel('State Values');
+legend('Position (x1)','Velocity (x2)');
